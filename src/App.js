@@ -9,7 +9,7 @@ function App() {
 
     return (
         <div className="app">
-            <h1>Neon Timing Client Device Demo</h1>
+            <h1>Neon Timing Socket.io Example</h1>
 
             <h2>Connection Settings</h2>
             <div>

@@ -1,3 +1,7 @@
+# Neon Timing Socket.io Example
+
+This is a simple example of the Neon Timing Protocol over a socket.io connection.
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).

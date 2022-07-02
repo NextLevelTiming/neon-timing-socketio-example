@@ -5,7 +5,6 @@ class SocketClient {
     constructor() {
         this.socket = null;
         this.apiKey = this.getApiKey();
-        this.fakeDeviceTimeOffset = Date.now();
         this.hostSupportedEvents = [];
         this.clientSupportedEvents = ['race','flag'];
         this.did = window.localStorage.getItem('nt-did');
@@ -70,10 +69,6 @@ class SocketClient {
         return localStorage.getItem('nt-api-key') ?? '';
     }
 
-    getFakeDeviceTime() {
-        return Date.now() - this.fakeDeviceTimeOffset;
-    }
-
     newGateEvent(transponder) {
         this.sendClientEvent({
             cmd: 'event',
@@ -94,7 +89,7 @@ class SocketClient {
         }
         const data = {
             ...event,
-            time: this.getFakeDeviceTime(),
+            time: Date.now(),
             protocol: 'NT1',
             did: this.did
         };
