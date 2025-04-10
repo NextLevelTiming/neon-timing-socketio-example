@@ -69,15 +69,6 @@ class SocketClient {
         return localStorage.getItem('nt-api-key') ?? '';
     }
 
-    newGateEvent(transponder) {
-        this.sendClientEvent({
-            cmd: 'event',
-            evt: 'gate',
-            type: 'transponder_passed_gate',
-            transponder
-        });
-    }
-
     sendClientEvent(event) {
         if (!this.socket || !this.socket.connected) {
             console.log('socket is not connected, cannot send message');
