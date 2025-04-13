@@ -1,3 +1,14 @@
 .app {
   margin: 2rem;
 }
+
+th {
+  text-align: left;
+  padding-right: 1rem;
+}
+
+td {
+  text-align: left;
+  padding-right: 1rem;
+}
+

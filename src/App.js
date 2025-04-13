@@ -6,6 +6,7 @@ import {Duration} from 'luxon';
 function App() {
     const [apiKey, setApiKey] = useState(SocketClient.getApiKey());
     const [standings, setStandings] = useState([]);
+    const [showApiKey, setShowApiKey] = useState(false);
 
     useEffect(() => {
         //The socket is a module that exports the actual socket.io socket
@@ -33,14 +34,16 @@ function App() {
                     // Calculate positions based on the sorted standings
                     let lastPosition = 0;
                     let lastLaps = -1;
+                    let lastElapsed = -1;
                     return sortedStandings.map((standing, index) => {
                         let position = index + 1;
 
-                        if (standing.laps === lastLaps) {
+                        if (standing.laps === lastLaps && standing.elapsed === lastElapsed) {
                             position = lastPosition;
                         } else {
                             lastPosition = position;
                             lastLaps = standing.laps;
+                            lastElapsed = standing.elapsed;
                         }
 
                         return {
@@ -57,6 +60,10 @@ function App() {
         }
     }, [standings]);
 
+    const toggleApiKeyVisibility = () => {
+        setShowApiKey(!showApiKey);
+    };
+
     return (
         <div className="app">
             <h1>Neon Timing Socket.io Example</h1>
@@ -64,10 +71,15 @@ function App() {
             <h2>Connection Settings</h2>
             <div>
                 <label>API Key</label><br/>
-                <input type="text" name="token" onChange={e => {
+                <input type={showApiKey ? 'text' : 'password'}
+                       name="token"
+                       onChange={e => {
                     setApiKey(e.target.value);
                     SocketClient.setApiKey(e.target.value);
                 }} value={apiKey} style={{width: '16rem'}}/>
+                <button onClick={toggleApiKeyVisibility}>
+                    {showApiKey ? 'Hide' : 'Show'} API Key
+                </button>
             </div>
 
             <h2>Live Results</h2>
