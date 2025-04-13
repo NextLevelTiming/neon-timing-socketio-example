@@ -1,6 +1,6 @@
 import './App.css';
 import SocketClient from './SocketClient';
-import {useState, useEffect} from "react";
+import {useEffect, useState} from "react";
 import {Duration} from 'luxon';
 
 function App() {
@@ -19,7 +19,35 @@ function App() {
             }
             if (message.type === 'standing') {
                 setStandings(prevStandings => {
-                    return [...prevStandings.filter((obj) => obj.id !== message.id), {...message}]
+                    // Update the standings array
+                    const updatedStandings = [...prevStandings.filter((obj) => obj.id !== message.id), { ...message }];
+
+                    // Sort the updated standings
+                    const sortedStandings = updatedStandings.sort((a, b) => {
+                        if (a.laps !== b.laps) {
+                            return b.laps - a.laps; // Sort by laps (descending)
+                        }
+                        return a.elapsed - b.elapsed; // Sort by elapsed time (ascending)
+                    });
+
+                    // Calculate positions based on the sorted standings
+                    let lastPosition = 0;
+                    let lastLaps = -1;
+                    return sortedStandings.map((standing, index) => {
+                        let position = index + 1;
+
+                        if (standing.laps === lastLaps) {
+                            position = lastPosition;
+                        } else {
+                            lastPosition = position;
+                            lastLaps = standing.laps;
+                        }
+
+                        return {
+                            ...standing,
+                            position
+                        };
+                    });
                 });
             }
         };
@@ -27,7 +55,7 @@ function App() {
         return () => {
             SocketClient.socket.off('host_event', processEvent);
         }
-    }, [])
+    }, [standings]);
 
     return (
         <div className="app">
@@ -46,6 +74,7 @@ function App() {
             <table>
                 <thead>
                 <tr>
+                    <th>Position</th>
                     <th>Name</th>
                     <th>Laps</th>
                     <th>Elapsed Time</th>
@@ -54,16 +83,9 @@ function App() {
                     <th>Transponder</th>
                 </tr>
                 </thead>
-                {standings.sort((a, b) => {
-                    if (a.laps !== b.laps) {
-                        return b.laps - a.laps;
-                    }
-                    if (a.elapsed !== b.elapsed) {
-                        return a.elapsed - b.elapsed;
-                    }
-                    return 0;
-                }).map(standing => {
+                {standings.map(standing => {
                     return <tr key={standing.id}>
+                        <td>{standing.position}</td>
                         <td>{standing.name}</td>
                         <td>{standing.laps}</td>
                         <td>{standing.elapsed ? Duration.fromMillis(standing.elapsed).toFormat('m:ss.SSS') : '-'}</td>
